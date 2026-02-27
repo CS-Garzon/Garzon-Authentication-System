@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <title>Dashboard</title>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="auth-card text-center">
+        <h1 class="text-3xl font-black mb-6 text-[#5865f2]">Dashboard</h1>
+        
+        <div class="bg-[#2c2c31] rounded-md p-4 mb-6 text-left border border-zinc-700">
+            <p class="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-2">Authenticated User</p>
+            <p class="text-white text-lg font-medium">Username: <span id="uName"></span></p>
+            <p class="text-white text-lg font-medium">Email: <span id="uEmail"></span></p>
+        </div>
+
+        <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md transition-all">
+            Logout
+        </button>
+    </div>
+
+    <script type="module">
+        import { getCurrentUser, logout } from './auth.js';
+
+        const state = { user: getCurrentUser() };
+
+        function render() {
+            if (!state.user) {
+                window.location.href = 'Login.html';
+                return;
+            }
+            document.getElementById('uName').innerText = state.user.username;
+            document.getElementById('uEmail').innerText = state.user.email;
+        }
+
+        document.getElementById('logoutBtn').onclick = logout;
+        render();
+    </script>
+</body>
+</html>

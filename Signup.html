@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css" />
+    <title>Sign Up - Auth System</title>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 bg-[#121214]">
+    <div class="auth-card bg-[#1a1a1e] rounded-xl shadow-2xl w-full max-w-md p-8">
+        <h2 class="text-2xl font-bold mb-6 text-center text-white">User Sign-up</h2>
+        
+        <form id="signupForm" class="space-y-4">
+            <div>
+                <label class="text-sm text-zinc-400 block mb-1">Username</label>
+                <input type="text" name="username" class="w-full bg-[#121214] border border-zinc-800 text-white rounded-md p-2 focus:border-[#5865f2] outline-none" required>
+            </div>
+
+            <div>
+                <label class="text-sm text-zinc-400 block mb-1">Email Address</label>
+                <input type="email" name="email" class="w-full bg-[#121214] border border-zinc-800 text-white rounded-md p-2 focus:border-[#5865f2] outline-none" required>
+                <span id="emailError" class="text-red-500 text-sm italic block mt-1"></span>
+            </div>
+
+            <div>
+                <label class="text-sm text-zinc-400 block mb-1">Password</label>
+                <input type="password" name="password" class="w-full bg-[#121214] border border-zinc-800 text-white rounded-md p-2 focus:border-[#5865f2] outline-none" required>
+                <span id="passwordError" class="text-red-500 text-sm italic block mt-1"></span>
+            </div>
+
+            <button type="submit" class="w-full bg-[#5865f2] hover:bg-[#4752c4] text-white font-semibold py-2 rounded-md transition-colors mt-6">
+                Sign Up
+            </button>
+        </form>
+        
+        <p class="text-center text-zinc-500 text-sm mt-6">
+            Already have an account? <a href="Login.html" class="text-[#5865f2] hover:underline">Login here</a>
+        </p>
+    </div>
+
+    <script type="module">
+        import { signup } from './auth.js';
+
+        let state = {
+            username: "",
+            email: "",
+            password: ""
+        };
+
+        function setState(newState) {
+            state = { ...state, ...newState };
+            render(); 
+        }
+
+        function handleInput(event) {
+            const { name, value } = event.target;
+            setState({
+                [name]: value,
+            });
+        }
+
+        document.querySelectorAll("#signupForm input").forEach((input) => {
+            input.addEventListener("input", handleInput);
+        });
+
+        const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+        function render() {
+            const emailError = document.getElementById("emailError");
+            const passwordError = document.getElementById("passwordError");
+
+            if (state.email !== "" && !isValidEmail(state.email)) {
+                emailError.textContent = "Invalid email format!";
+            } else {
+                emailError.textContent = "";
+            }
+
+            if (state.password !== "" && state.password.length < 8) {
+                passwordError.textContent = "Password must be at least 8 characters";
+            } else if (state.password !== "" && !/\d/.test(state.password)) {
+                passwordError.textContent = "Password must contain a number";
+            } else {
+                passwordError.textContent = "";
+            }
+        }
+
+        document.getElementById("signupForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            if (!isValidEmail(state.email) || state.password.length < 8 || !/\d/.test(state.password)) {
+                alert("Please fix the validation errors before submitting.");
+                return;
+            }
+
+            const result = signup(state.username, state.email, state.password);
+            
+            if (result.success) {
+                alert("Account created successfully!");
+                window.location.href = 'Login.html';
+            } else {
+                alert(result.message);
+            }
+        });
+    </script>
+</body>
+</html>
