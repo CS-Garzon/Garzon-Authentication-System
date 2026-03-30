@@ -8,7 +8,7 @@ const checkoutMsg = document.getElementById('checkout-message');
 
 async function fetchProducts() {
     try {
-        const response = await fetch('https://api.escuelajs.co/api/v1/products?limit=25&offset=0');
+        const response = await fetch('https://api.escuelajs.co/api/v1/products/?categoryId=1&limit=25&offset=0');
         allProducts = await response.json();
         renderProducts();
     } catch (error) {
@@ -43,7 +43,7 @@ function renderProducts() {
                 class="w-full h-48 object-cover"
                 referrerpolicy="no-referrer" 
                 crossorigin="anonymous"
-                onerror="this.src='https://placehold.co/600x400/1a1a1e/5865f2?text=Image+Unavailable'"
+                onerror="this.src='${product.category.image || `https://placehold.co/600x400/1a1a1e/5865f2?text=Image+Unavailable`}'"
             >
             <div class="p-4 flex flex-col flex-grow gap-2">
                 <h3 class="font-bold text-white text-lg line-clamp-1">${product.title}</h3>
@@ -85,6 +85,18 @@ function removeFromCart(id) {
     renderCart();
 }
 
+function updateItemQuantity(id, delta) {
+    const item = cart.find(item => item.id === id);
+    if (!item) return;
+
+    item.quantity += delta;
+    if (item.quantity <= 0) {
+        removeFromCart(id);
+    } else {
+        renderCart();
+    }
+}
+
 function renderCart() {
     cartContainer.innerHTML = '';
     let total = 0;
@@ -97,15 +109,29 @@ function renderCart() {
             const cartItem = document.createElement('div');
             cartItem.className = "flex justify-between items-center bg-[#121214] p-2 rounded border border-zinc-800";
             cartItem.innerHTML = `
-                <div class="flex-grow">
+                <div class="flex-grow"> 
                     <p class="text-sm font-bold text-white">${item.name}</p>
-                    <p class="text-xs text-zinc-400">$${item.price} x ${item.quantity}</p>
+                    <p class="text-xs text-zinc-400">$${item.price.toFixed(2)} x ${item.quantity}</p>
                 </div>
-                <button class="remove-from-cart text-red-500 hover:text-red-700 text-sm font-bold px-2">X</button>
+                <div class="flex items-center gap-2">
+                    <button class="decrease-qty bg-zinc-800 text-zinc-200 px-2 py-1 rounded hover:bg-zinc-700">-</button>
+                    <span class="text-xs text-zinc-200">${item.quantity}</span>
+                    <button class="increase-qty bg-zinc-800 text-zinc-200 px-2 py-1 rounded hover:bg-zinc-700">+</button>
+                    <button class="remove-from-cart text-red-500 hover:text-red-700 text-sm font-bold px-2">X</button>
+                </div>
             `;
             cartContainer.appendChild(cartItem);
 
+            const decreaseBtn = cartItem.querySelector('.decrease-qty');
+            const increaseBtn = cartItem.querySelector('.increase-qty');
             const removeBtn = cartItem.querySelector('.remove-from-cart');
+
+            if (decreaseBtn) {
+                decreaseBtn.addEventListener('click', () => updateItemQuantity(item.id, -1));
+            }
+            if (increaseBtn) {
+                increaseBtn.addEventListener('click', () => updateItemQuantity(item.id, 1));
+            }
             if (removeBtn) {
                 removeBtn.addEventListener('click', () => removeFromCart(item.id));
             }
