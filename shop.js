@@ -8,7 +8,7 @@ const checkoutMsg = document.getElementById('checkout-message');
 
 async function fetchProducts() {
     try {
-        const response = await fetch('https://api.escuelajs.co/api/v1/products/?categoryId=1&limit=25&offset=0');
+        const response = await fetch('https://api.escuelajs.co/api/v1/products/?categorySlug=clothes&limit=25&offset=0');
         allProducts = await response.json();
         renderProducts();
     } catch (error) {
