@@ -16,6 +16,10 @@ async function fetchProducts() {
     }
 }
 
+document.getElementById('minPriceInput').addEventListener('input', renderProducts);
+document.getElementById('maxPriceInput').addEventListener('input', renderProducts);
+document.getElementById('sortSelect').addEventListener('change', renderProducts);
+
 function renderProducts() {
     let filtered = [...allProducts];    
     
@@ -68,10 +72,6 @@ function renderProducts() {
         }
     });
 }
-
-document.getElementById('minPriceInput').addEventListener('input', renderProducts);
-document.getElementById('maxPriceInput').addEventListener('input', renderProducts);
-document.getElementById('sortSelect').addEventListener('change', renderProducts);
 
 function addToCart(product) {
     const existingItem = cart.find(item => item.id === product.id);
@@ -151,7 +151,7 @@ document.getElementById('checkoutBtn').addEventListener('click', () => {
         user: currentUser,
         cart: cart,
         total: Number(cartTotalDisplay.innerText),
-        date: new Date().toISOString() // ISO format for serializable payload
+        date: new Date().toISOString()
     };
 
     checkoutMsg.innerText = "Processing order...";
