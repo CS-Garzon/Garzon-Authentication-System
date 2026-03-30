@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="https://img.icons8.com/ios-filled/50/5865f2/add-user-male.png" />
     <title>Sign Up - Auth System</title>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 bg-[#121214]">
@@ -85,23 +86,57 @@
             }
         }
 
+        function openAlertModal(message) {
+            const modal = document.getElementById('globalModal');
+            const messageEl = document.getElementById('globalModalMessage');
+            if (!modal || !messageEl) {
+                alert(message);
+                return;
+            }
+            messageEl.textContent = message;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAlertModal() {
+            const modal = document.getElementById('globalModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        document.getElementById('globalModalClose').addEventListener('click', closeAlertModal);
+        document.getElementById('globalModal').addEventListener('click', (e) => {
+            if (e.target.id === 'globalModal') closeAlertModal();
+        });
+
         document.getElementById("signupForm").addEventListener("submit", function (event) {
             event.preventDefault();
 
             if (!isValidEmail(state.email) || state.password.length < 8 || !/\d/.test(state.password)) {
-                alert("Please fix the validation errors before submitting.");
+                openAlertModal("Please fix the validation errors before submitting.");
                 return;
             }
 
             const result = signup(state.username, state.email, state.password);
             
             if (result.success) {
-                alert("Account created successfully!");
-                window.location.href = 'Login.html';
+                openAlertModal("Account created successfully!");
+                setTimeout(() => {
+                    window.location.href = 'Login.html';
+                }, 1200);
             } else {
-                alert(result.message);
+                openAlertModal(result.message);
             }
         });
     </script>
+
+    <div id="globalModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50">
+        <div class="bg-[#0f172a] rounded-xl p-6 w-full max-w-sm text-center border border-zinc-700 shadow-lg">
+            <p id="globalModalMessage" class="text-white text-base mb-4"></p>
+            <button id="globalModalClose" class="bg-[#5865f2] hover:bg-[#4752c4] text-white font-bold py-2 px-4 rounded">OK</button>
+        </div>
+    </div>
 </body>
 </html>
